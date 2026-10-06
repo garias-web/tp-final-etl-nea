@@ -186,9 +186,7 @@ def calcular_participacion(valor, total):
         return None
 
     participation = (valor / total) * 100
-    return round(participation, 2)
-    
-    raise NotImplementedError("TODO 4: implementá calcular_participacion()")
+    return round(participation, 2)  
     # ---------------------------------------------------------------------
 
 
@@ -218,7 +216,11 @@ def calcular_variacion(actual, anterior):
     Devolvé None si 'anterior' es None o cero. Redondeá a 2 decimales.
     """
     # TODO 5 --------------------------------------------------------------
-    raise NotImplementedError("TODO 5: implementá calcular_variacion()")
+    if anterior is None or anterior == 0 or actual is None:
+        return None
+
+    variacion =  ((actual - anterior ) / anterior) * 100
+    return round(variacion, 2)
     # ---------------------------------------------------------------------
 
 
