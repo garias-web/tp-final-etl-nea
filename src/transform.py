@@ -104,26 +104,42 @@ def ancho_a_largo(paquetes_destino):
     """
     filas = []
 
+
     # TODO 1 --------------------------------------------------------------
-    # Recorré cada paquete, y dentro de cada uno cada fila de 'data'.
-    #
-    # Pistas:
-    #   - Para separar fecha y valores:   fecha = fila_cruda[0]
-    #                                     valores = fila_cruda[1:]
-    #   - Para saber en qué posición está el total:
-    #                                     columnas.index(CLAVE_TOTAL)
-    #   - Para recorrer nombre y posición a la vez:
-    #                                     for i, nombre in enumerate(columnas)
-    #   - Usá extraer_anio() para el año.
-    #
-    # Estructura sugerida (bucles anidados, como en la Clase 3):
-    #   for paquete in paquetes_destino:
-    #       ... leer provincia y orden_columnas ...
-    #       for fila_cruda in paquete["data"]:
-    #           ... calcular anio y total ...
-    #           for posicion, nombre in enumerate(columnas):
-    #               ... saltear el total y los None, y hacer filas.append({...})
-    raise NotImplementedError("TODO 1: implementá ancho_a_largo()")
+    for paquete in paquetes_destino:
+        provincia = paquete["provincia"]
+        columnas = paquete["orden_columnas"]
+
+        ## Se guarda la posición del total dentro del listado de columnas
+        pos_total = columnas.index(CLAVE_TOTAL)
+
+        for fila_cruda in paquete["data"]:
+            fecha = fila_cruda[0]
+            valores = fila_cruda[1:]
+            anio = extraer_anio(fecha)
+
+            #Se extrae el total del año. Si no está, se saltea la fila completa
+            val_total = valores[pos_total]
+            if val_total is None:
+                continue
+            total_provincia_musd = round(float(val_total), 2)
+
+            #Recorremos cada destino según su columna
+            for posicion, nombre in enumerate(columnas):
+                if nombre == CLAVE_TOTAL:
+                    continue #El total no es un destino
+
+                valor = valores[posicion]
+                if valor is None:
+                    continue #Salteamos observaciones nulas del INDEC
+
+                filas.append({
+                    "anio": anio,
+                    "provincia": provincia,
+                    "destino": nombre,
+                    "valor_musd": round(float(valor),2),
+                    "total_provincia_musd": total_provincia_musd,                    
+                }) 
     # ---------------------------------------------------------------------
 
     logging.info("  ancho_a_largo: %s filas", len(filas))
