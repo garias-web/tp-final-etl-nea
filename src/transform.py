@@ -169,10 +169,6 @@ def calcular_decada(anio):
     # TODO 3 --------------------------------------------------------------
     decada = (anio// 10 ) * 10
     return f"{decada}s"
-    # Pista: la división entera // te da el inicio de la década.
-    #        ¿Cuánto vale (1993 // 10) * 10 ?
-    #        Después armá el texto con una f-string.
-    #raise NotImplementedError("TODO 3: implementá calcular_decada()")
     # ---------------------------------------------------------------------
 
 
@@ -186,6 +182,12 @@ def calcular_participacion(valor, total):
     Redondeá a 2 decimales.
     """
     # TODO 4 --------------------------------------------------------------
+    if total is None or total == 0 or valor is None:
+        return None
+
+    participation = (valor / total) * 100
+    return round(participation, 2)
+    
     raise NotImplementedError("TODO 4: implementá calcular_participacion()")
     # ---------------------------------------------------------------------
 
