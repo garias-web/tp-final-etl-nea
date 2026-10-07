@@ -243,8 +243,24 @@ def escribir_log_corrida(resumen, carpeta=None, nombre=None):
         2026-08-02 14:30 | OK | 1408 filas | 1993-2024
     """
     # TODO 12b ------------------------------------------------------------
+    carpeta = carpeta or config.DIR_PROCESSED
+    nombre = nombre or getattr(config, "ARCHIVO_LOG", getattr(config, "ARCHIVO_HISTORIAL", "historial.log"))
+    os.makedirs(carpeta, exist_ok=True)
+    ruta = os.path.join(carpeta, nombre)
 
-    raise NotImplementedError("TODO 12b: implementá escribir_log_corrida()")
+    fecha_hora = resumen.get("generado", datetime.now().strftime("%Y-%m-%d %H:%M"))
+    filas = resumen.get("filas", 0)
+    periodo = resumen.get("periodo", {})
+    desde = periodo.get("desde", "")
+    hasta = periodo.get("hasta", "")
+
+    linea_log = f"{fecha_hora} | OK | {filas} filas | {desde}-{hasta}\n"
+
+    with open(ruta, "a", encoding="utf-8") as f:
+        f.write(linea_log)
+
+    logging.info("  Log de corrida actualizado: %s", ruta)
+    return ruta
     # ---------------------------------------------------------------------
 
 
