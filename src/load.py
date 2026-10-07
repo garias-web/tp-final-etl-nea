@@ -178,13 +178,39 @@ def construir_resumen(filas, detalle_checks):
         quality_checks     (list) el detalle_checks que recibís
     """
     # TODO 11 -------------------------------------------------------------
-    # Pistas:
-    #   - Para la lista de valores: [f["valor_musd"] for f in filas]
-    #   - min(), max() y sum()/len() ya los conocés.
-    #   - Para provincias únicas y ordenadas: sorted({f["provincia"] for f in filas})
-    #   - Para la fecha: datetime.now().strftime("%Y-%m-%d %H:%M")
-    #   - Podés agregar más claves si querés (suma puntos en la rúbrica).
-    raise NotImplementedError("TODO 11: implementá construir_resumen()")
+    anios = [f["anio"] for f in filas if f["anio"] is not None]
+    valores = [f["valor_musd"] for f in filas if f["valor_musd"] is not None]
+
+    anio_min = min(anios) if anios else None
+    anio_max= max(anios) if anios else None
+
+    val_min = round(min(valores), 2) if valores else 0.0
+    val_max = round(max(valores), 2) if valores else 0.0
+    val_prom = round(sum(valores) / len(valores), 2) if valores else 0.0
+
+    provincias_ordenadas = sorted({f["provincia"] for f in filas if f.get("provincia")})
+
+    resumen = {
+            "dataset": "Exportaciones NEA por provincia y destino",
+            "fuente": "INDEC",
+            "unidad": "millones de dólares FOB",
+            "generado": datetime.now().strftime("%Y-%m-%d %H:%M"),
+            "filas": len(filas),
+            "columnas": len(COLUMNAS),
+            "periodo": {
+                "desde": anio_min,
+                "hasta": anio_max
+            },
+            "provincias": provincias_ordenadas,
+            "valor_musd": {
+                "minimo": val_min,
+                "maximo": val_max,
+                "promedio": val_prom
+            },
+            "quality_checks": detalle_checks
+        }
+
+    return resumen
     # ---------------------------------------------------------------------
 
 
