@@ -276,8 +276,6 @@ def agregar_ranking(filas, top_n=None):
 
     return filas
 
-
-
     # ---------------------------------------------------------------------
 
 
@@ -304,11 +302,40 @@ def construir_indice_rubros(paquetes_rubro):
     indice = {}
 
     # TODO 8a -------------------------------------------------------------
-    # Pistas:
-    #   - Para el rubro con mayor valor:  max(dic, key=dic.get)
-    #   - El total del año es la suma de los 4 rubros: sum(dic.values())
-    #   - Descartá los valores None antes de sumar.
-    raise NotImplementedError("TODO 8a: implementá construir_indice_rubros()")
+    for paquete in paquetes_rubro:
+        provincia = paquete["provincia"]
+        columnas = paquete["orden_columnas"]
+
+        for fila_cruda in paquete["data"]:
+            fecha = fila_cruda[0]
+            valores_crudos = fila_cruda [1:]
+            anio = extraer_anio(fecha)
+
+        #Diccionario con valores no nulos para los rubros
+            valores_rubro = {}
+            for col, val in zip(columnas, valores_crudos):
+                if val is not None:
+                    valores_rubro[col] = float(val)
+
+                if not valores_rubro:
+                    continue
+
+                #Rubro con mayor valor
+                rubro_principal = max(valores_rubro, key=valores_rubro.get)
+
+                #Cálculo de participación de Productos primarios
+                total_rubros = sum(valores_rubro.values())
+                if total_rubros > 0:
+                    val_pp = valores_rubro.get("Productos primarios", 0.0)
+                    pp_participacion_pct = round((val_pp / total_rubros) * 100, 2)
+                else:
+                    pp_participacion_pct = None
+
+                indice[(provincia, anio)] = {
+                    "rubro_principal": rubro_principal,
+                    "pp_participacion_pct": pp_participacion_pct,
+                }
+    #raise NotImplementedError("TODO 8a: implementá construir_indice_rubros()")
     # ---------------------------------------------------------------------
 
     logging.info("  índice de rubros: %s claves (provincia, año)", len(indice))
@@ -324,9 +351,18 @@ def unir_con_rubros(filas, indice_rubros):
     CONTRATO: modifica y devuelve la misma lista de filas.
     """
     # TODO 8b -------------------------------------------------------------
-    # Para cada fila, buscá indice_rubros.get((provincia, anio)) y asigná
-    # 'rubro_principal' y 'pp_participacion_pct'. Si no hay match, None.
-    raise NotImplementedError("TODO 8b: implementá unir_con_rubros()")
+    for fila in filas:
+        clave = (fila["provincia"], fila["anio"])
+        info_rubro = indice_rubros.get(clave)
+
+        if info_rubro:
+            fila["rubro_principal"] = info_rubro.get("rubro_principal")
+            fila["pp_participacion_pct"] = info_rubro.get("pp_participacion_pct")
+        else:
+            fila["rubro_principal"] = None
+            fila["pp_participacion_pct"] =  None
+
+    return filas
     # ---------------------------------------------------------------------
 
 
